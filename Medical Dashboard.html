@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> ABBCI Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e1e8ed;
+        }
+        
+        .card h2 {
+            color: #4a90e2;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #4a90e2;
+            padding-bottom: 0.5rem;
+        }
+        
+        .date-list {
+            list-style: none;
+        }
+        
+        .date-item {
+            background: #f8f9fa;
+            margin: 0.5rem 0;
+            padding: 1rem;
+            border-radius: 5px;
+            border-left: 4px solid #4a90e2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .date-label {
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .date-value {
+            font-size: 1.1rem;
+            color: #333;
+        }
+        
+        .timer-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .timer-btn {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .timer-btn:hover {
+            background: #357abd;
+        }
+        
+        .timer-btn.active {
+            background: #ff6b6b;
+        }
+        
+        .timer-display {
+            font-size: 3rem;
+            text-align: center;
+            margin: 1rem 0;
+            font-weight: bold;
+            color: #4a90e2;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .timer-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        
+        .action-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+        
+        .action-btn:hover {
+            background: #218838;
+        }
+        
+        .action-btn.stop {
+            background: #dc3545;
+        }
+        
+        .action-btn.stop:hover {
+            background: #c82333;
+        }
+        
+        .action-btn.reset {
+            background: #6c757d;
+        }
+        
+        .action-btn.reset:hover {
+            background: #5a6268;
+        }
+        
+        .calculator-input {
+            margin-bottom: 1rem;
+        }
+        
+        .calculator-input label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .calculator-input input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .calculator-input input:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+        
+        .calculate-btn {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+        
+        .calculate-btn:hover {
+            background: #357abd;
+        }
+        
+        .results {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 5px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .results h3 {
+            color: #28a745;
+            margin-bottom: 1rem;
+        }
+        
+        .calculation-step {
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .final-result {
+            background: #28a745;
+            color: white;
+            padding: 1rem;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .timer-display {
+                font-size: 2rem;
+            }
+            
+            .timer-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Medical Dashboard</h1>
+            <p>Date References, Timer, and IV Immunoglobulin Calculator</p>
+        </div>
+        
+        <div class="dashboard-grid">
+            <!-- Date References Card -->
+            <div class="card">
+                <h2>📅 Date References</h2>
+                <ul class="date-list" id="dateList">
+                    <!-- Dates will be populated by JavaScript -->
+                </ul>
+            </div>
+            
+            <!-- Timer Card -->
+            <div class="card">
+                <h2>⏱️ Timer</h2>
+                <div class="timer-controls">
+                    <button class="timer-btn" onclick="setTimer(5)">5 min</button>
+                    <button class="timer-btn" onclick="setTimer(10)">10 min</button>
+                    <button class="timer-btn" onclick="setTimer(15)">15 min</button>
+                    <button class="timer-btn" onclick="setTimer(30)">30 min</button>
+                    <button class="timer-btn" onclick="setTimer(60)">60 min</button>
+                </div>
+                <div class="timer-display" id="timerDisplay">00:00</div>
+                <div class="timer-actions">
+                    <button class="action-btn" id="startBtn" onclick="startTimer()">Start</button>
+                    <button class="action-btn stop" id="stopBtn" onclick="stopTimer()">Stop</button>
+                    <button class="action-btn reset" onclick="resetTimer()">Reset</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- IV Immunoglobulin Calculator Card -->
+        <div class="card">
+            <h2>💉 IV Immunoglobulin Infusion Time Calculator</h2>
+            <div class="calculator-input">
+                <label for="weight">Patient Weight (kg):</label>
+                <input type="number" id="weight" placeholder="Enter weight in kg" min="1" max="200" step="0.1">
+            </div>
+            <button class="calculate-btn" onclick="calculateInfusionTime()">Calculate Infusion Time</button>
+            <div id="calculationResults" style="display: none;">
+                <!-- Results will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Date References
+        function populateDates() {
+            const dateList = document.getElementById('dateList');
+            const today = new Date();
+            const periods = [21, 28, 42, 56, 84];
+            
+            periods.forEach(days => {
+                const pastDate = new Date(today);
+                pastDate.setDate(today.getDate() - days);
+                
+                const listItem = document.createElement('li');
+                listItem.className = 'date-item';
+                listItem.innerHTML = `
+                    <span class="date-label">${days} days prior:</span>
+                    <span class="date-value">${pastDate.toLocaleDateString('en-US', { 
+                        weekday: 'short', 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric' 
+                    })}</span>
+                `;
+                dateList.appendChild(listItem);
+            });
+        }
+        
+        // Timer functionality
+        let timerInterval;
+        let timeRemaining = 0;
+        let isRunning = false;
+        
+        function setTimer(minutes) {
+            // Remove active class from all buttons
+            document.querySelectorAll('.timer-btn').forEach(btn => btn.classList.remove('active'));
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            timeRemaining = minutes * 60;
+            updateTimerDisplay();
+            stopTimer();
+        }
+        
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        function startTimer() {
+            if (timeRemaining > 0 && !isRunning) {
+                isRunning = true;
+                timerInterval = setInterval(() => {
+                    timeRemaining--;
+                    updateTimerDisplay();
+                    
+                    if (timeRemaining <= 0) {
+                        stopTimer();
+                        alert('Timer finished!');
+                    }
+                }, 1000);
+            }
+        }
+        
+        function stopTimer() {
+            isRunning = false;
+            clearInterval(timerInterval);
+        }
+        
+        function resetTimer() {
+            stopTimer();
+            timeRemaining = 0;
+            updateTimerDisplay();
+            document.querySelectorAll('.timer-btn').forEach(btn => btn.classList.remove('active'));
+        }
+        
+        // IV Immunoglobulin Calculator
+        function calculateInfusionTime() {
+            const weight = parseFloat(document.getElementById('weight').value);
+            const resultsDiv = document.getElementById('calculationResults');
+            
+            if (!weight || weight <= 0) {
+                alert('Please enter a valid weight in kg');
+                return;
+            }
+            
+            // Standard IVIG calculation parameters
+            const dosePerKg = 0.4; // g/kg (standard dose)
+            const concentration = 0.05; // 5% solution (0.05 g/mL)
+            const premedicationTime = 30; // minutes
+            
+            // Titration schedule (rate increases)
+            const titrationSteps = [
+                { rate: 0.5, duration: 30 }, // mL/kg/hr for first 30 min
+                { rate: 1.0, duration: 30 }, // mL/kg/hr for next 30 min
+                { rate: 2.0, duration: 30 }, // mL/kg/hr for next 30 min
+                { rate: 3.0, duration: 0 }   // mL/kg/hr for remainder
+            ];
+            
+            // Calculations
+            const totalDose = weight * dosePerKg; // grams
+            const totalVolume = totalDose / concentration; // mL
+            
+            let calculationSteps = [];
+            let totalInfusionTime = 0;
+            let remainingVolume = totalVolume;
+            
+            calculationSteps.push(`Patient Weight: ${weight} kg`);
+            calculationSteps.push(`Standard Dose: ${dosePerKg} g/kg`);
+            calculationSteps.push(`Total Dose: ${weight} kg × ${dosePerKg} g/kg = ${totalDose.toFixed(1)} g`);
+            calculationSteps.push(`Concentration: ${concentration} g/mL (5% solution)`);
+            calculationSteps.push(`Total Volume: ${totalDose.toFixed(1)} g ÷ ${concentration} g/mL = ${totalVolume.toFixed(1)} mL`);
+            calculationSteps.push(`Premedication Time: ${premedicationTime} minutes`);
+            calculationSteps.push('');
+            calculationSteps.push('Titration Schedule:');
+            
+            // Calculate infusion time for each step
+            titrationSteps.forEach((step, index) => {
+                const rateInMlPerMin = (step.rate * weight) / 60; // Convert mL/kg/hr to mL/min
+                
+                if (index < titrationSteps.length - 1) {
+                    // Fixed duration steps
+                    const volumeInThisStep = rateInMlPerMin * step.duration;
+                    const actualVolume = Math.min(volumeInThisStep, remainingVolume);
+                    const actualTime = actualVolume / rateInMlPerMin;
+                    
+                    calculationSteps.push(`Step ${index + 1}: ${step.rate} mL/kg/hr × ${weight} kg = ${(step.rate * weight).toFixed(1)} mL/hr`);
+                    calculationSteps.push(`  Rate: ${rateInMlPerMin.toFixed(2)} mL/min for ${actualTime.toFixed(0)} minutes`);
+                    calculationSteps.push(`  Volume: ${actualVolume.toFixed(1)} mL`);
+                    
+                    totalInfusionTime += actualTime;
+                    remainingVolume -= actualVolume;
+                } else {
+                    // Final step - remainder of volume
+                    if (remainingVolume > 0) {
+                        const finalTime = remainingVolume / rateInMlPerMin;
+                        calculationSteps.push(`Final Step: ${step.rate} mL/kg/hr × ${weight} kg = ${(step.rate * weight).toFixed(1)} mL/hr`);
+                        calculationSteps.push(`  Rate: ${rateInMlPerMin.toFixed(2)} mL/min for ${finalTime.toFixed(0)} minutes`);
+                        calculationSteps.push(`  Volume: ${remainingVolume.toFixed(1)} mL`);
+                        totalInfusionTime += finalTime;
+                    }
+                }
+            });
+            
+            const totalTimeWithPremed = totalInfusionTime + premedicationTime;
+            const hours = Math.floor(totalTimeWithPremed / 60);
+            const minutes = Math.round(totalTimeWithPremed % 60);
+            
+            // Display results
+            resultsDiv.innerHTML = `
+                <div class="results">
+                    <h3>Calculation Breakdown:</h3>
+                    ${calculationSteps.map(step => `<div class="calculation-step">${step}</div>`).join('')}
+                    <div class="final-result">
+                        Total Time: ${hours}h ${minutes}m
+                        <br>
+                        (${premedicationTime} min premedication + ${Math.round(totalInfusionTime)} min infusion)
+                    </div>
+                </div>
+            `;
+            resultsDiv.style.display = 'block';
+        }
+        
+        // Initialize dates on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            populateDates();
+        });
+    </script>
+</body>
+</html>
